@@ -37,6 +37,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let router: axum::Router<()> = axum::Router::new()
         .route("/create", post(add_entry))
         .route("/retrieve", get(retrieve_entry))
+        .route("/create-table", post(fun))
         .with_state(session)
         .route("/health", get(|| async { "OK" }));
 
@@ -54,6 +55,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     server.await?;
 
     Ok(())
+}
+
+async fn fun(State(state): State<Session>) -> Result<impl IntoResponse, String> {
+    create_table(&state).await.map_err(|err| err.to_string())?;
+
+    Ok("Table Created".to_string())
 }
 
 async fn add_entry(State(state): State<Session>) -> Result<impl IntoResponse, String> {

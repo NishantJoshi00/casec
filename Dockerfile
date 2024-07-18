@@ -77,8 +77,8 @@ ARG BINARY=casec
 
 RUN mkdir -p ${BIN_DIR}
 
-COPY cp /app/target/debug/${BINARY} ${BIN_DIR}/${BINARY}
+RUN cp /app/target/debug/${BINARY} ${BIN_DIR}/${BINARY}
 
 WORKDIR ${BIN_DIR}
 
-CMD /local/bin/casec
+CMD ./casec
