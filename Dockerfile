@@ -78,7 +78,7 @@ ARG BINARY=casec
 
 RUN mkdir -p ${BIN_DIR}
 
-COPY --from=cooking /app/target/debug/${BINARY} ${BIN_DIR}/${BINARY}
+COPY /app/target/debug/${BINARY} ${BIN_DIR}/${BINARY}
 
 WORKDIR ${BIN_DIR}
 
