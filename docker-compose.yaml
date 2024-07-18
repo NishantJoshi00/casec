@@ -1,0 +1,30 @@
+networks:
+  internal:
+
+services:
+  cassandra:
+    image: "bitnami/cassandra:latest"
+    ports:
+      - 9042:9042
+    networks:
+      - internal
+    environment:
+      - CASSANDRA_USER=cassandra
+      - CASSANDRA_PASSWORD=cassandra
+
+  # cassandra-client:
+  #   image: cassandra:latest
+  #   depends_on:
+  #     - cassandra
+  #   volumes:
+  #     - ./schema.cql:/schema.cql
+  #   command: /bin/bash -c "sleep 60 && cqlsh cassandra -f /schema.cql"
+
+  app:
+    build: .
+    networks:
+      - internal
+    environment:
+      - CASSANDRA_HOST=cassandra
+      - CASSANDRA_USERNAME=cassandra
+      - CASSANDRA_PASSWORD=cassandra
