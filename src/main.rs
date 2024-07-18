@@ -37,7 +37,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let router: axum::Router<()> = axum::Router::new()
         .route("/create", post(add_entry))
         .route("/retrieve", get(retrieve_entry))
-        .with_state(session);
+        .with_state(session)
+        .route("/health", get(|| async { "OK" }));
 
     let server = axum::serve(
         TcpListener::bind((
