@@ -56,7 +56,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn add_entry(State(state): State<Session>) -> Result<impl IntoResponse, String> {
+    let start = tokio::time::Instant::now();
     let output = add_data(&state).await;
+    let duration = start.elapsed();
+    println!("[INFO] Add Entry: {}", duration.as_micros());
 
     match output {
         Ok(value) => serde_json::to_string(&value).map_err(|err| err.to_string()),
@@ -68,7 +71,10 @@ async fn retrieve_entry(
     State(state): State<Session>,
     Path((payment_id, attempt_id)): Path<(String, String)>,
 ) -> Result<impl IntoResponse, String> {
+    let start = tokio::time::Instant::now();
     let output = retrieve_data(payment_id, attempt_id, &state).await;
+    let duration = start.elapsed();
+    println!("[INFO] Retrieve Entry: {}", duration.as_micros());
 
     match output {
         Ok(_) => Ok("Success".to_string()),
@@ -110,8 +116,6 @@ async fn retrieve_data(
     let mut rows = rows.iter();
 
     let row = rows.next().context("No rows found")?;
-
-    println!("{:#?}", row);
 
     Ok(())
 }
