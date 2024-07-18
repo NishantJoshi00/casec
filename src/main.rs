@@ -1,6 +1,10 @@
 use anyhow::{Context, Result};
+use axum::extract::{Path, State};
+use axum::response::IntoResponse;
+use axum::routing::{get, post};
 use serde::{Deserialize, Serialize};
 use time::PrimitiveDateTime;
+use tokio::net::TcpListener;
 
 use self::randr::Randr;
 
@@ -25,13 +29,51 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let session = cluster.connect().await?;
 
+    let server_host = env::var("SERVER_HOST").unwrap_or("localhost".to_string());
+    let server_port = env::var("SERVER_PORT").unwrap_or("8000".to_string());
+
     create_table(&session).await?;
 
-    let output = add_data(&session).await?;
+    let router: axum::Router<()> = axum::Router::new()
+        .route("/create", post(add_entry))
+        .route("/retrieve", get(retrieve_entry))
+        .with_state(session);
 
-    retrieve_data(output.payment_id, output.attempt_id, &session).await?;
+    let server = axum::serve(
+        TcpListener::bind((
+            server_host,
+            server_port
+                .parse::<u16>()
+                .context("Failed while parsing port")?,
+        ))
+        .await?,
+        router,
+    );
+
+    server.await?;
 
     Ok(())
+}
+
+async fn add_entry(State(state): State<Session>) -> Result<impl IntoResponse, String> {
+    let output = add_data(&state).await;
+
+    match output {
+        Ok(value) => serde_json::to_string(&value).map_err(|err| err.to_string()),
+        Err(err) => Err(err.to_string()),
+    }
+}
+
+async fn retrieve_entry(
+    State(state): State<Session>,
+    Path((payment_id, attempt_id)): Path<(String, String)>,
+) -> Result<impl IntoResponse, String> {
+    let output = retrieve_data(payment_id, attempt_id, &state).await;
+
+    match output {
+        Ok(_) => Ok("Success".to_string()),
+        Err(err) => Err(err.to_string()),
+    }
 }
 
 async fn create_table(session: &Session) -> Result<(), Box<dyn std::error::Error>> {
