@@ -63,9 +63,9 @@ COPY --from=base / /
 #   --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
 #   cargo chef cook --recipe-path recipe.json
 
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-  --mount=type=cache,target=/usr/local/cargo/git \
-  cargo build
+# RUN --mount=type=cache,target=/usr/local/cargo/registry \
+#   --mount=type=cache,target=/usr/local/cargo/git \
+RUN cargo build
   # --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
 
 # RUN /usr/local/cargo/sccache --show-stats
