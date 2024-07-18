@@ -17,28 +17,28 @@ RUN \
   && ln -s /usr/lib/x86_64-linux-gnu/libcassandra.so.2 /usr/lib/libcassandra.so		
 
 # Stage 2: Planner image
-FROM lukemathwalker/cargo-chef:latest-rust-1.78.0 AS chef
+# FROM lukemathwalker/cargo-chef:latest-rust-1.78.0 AS chef
 WORKDIR /app
 
 COPY . .
-RUN cargo chef prepare --recipe-path recipe.json
+# RUN cargo chef prepare --recipe-path recipe.json
 
 
 # # Stage 3: Builder image
-FROM chef AS cooking
-WORKDIR /app
+# FROM chef AS cooking
+# WORKDIR /app
 
 COPY . .
 
-ARG CARGO_DIR
-ARG ACTIONS_RUNTIME_TOKEN
-ARG ACTIONS_CACHE_URL
+# ARG CARGO_DIR
+# ARG ACTIONS_RUNTIME_TOKEN
+# ARG ACTIONS_CACHE_URL
 
-ENV CARGO_DIR=${CARGO_DIR}
+# ENV CARGO_DIR=${CARGO_DIR}
 
-COPY $CARGO_DIR /usr/local/cargo
+# COPY $CARGO_DIR /usr/local/cargo
 
-RUN ls -l
+# RUN ls -l
 
 # only do in local docker build
 # RUN cargo install sccache
@@ -52,7 +52,7 @@ ENV SCCACHE_STATS=1
 ENV SCCACHE_GHA_ENABLED="on"
 ENV ACTIONS_CACHE_URL=${ACTIONS_CACHE_URL}
 ENV ACTIONS_RUNTIME_TOKEN=${ACTIONS_RUNTIME_TOKEN}
-ENV RUSTC_WRAPPER=/usr/local/cargo/sccache SCCACHE_DIR=~/.cache/sccache
+# ENV RUSTC_WRAPPER=/usr/local/cargo/sccache SCCACHE_DIR=~/.cache/sccache
 
 COPY --from=base / /
 
