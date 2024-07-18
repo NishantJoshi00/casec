@@ -57,18 +57,18 @@ ENV RUSTC_WRAPPER=/usr/local/cargo/sccache SCCACHE_DIR=~/.cache/sccache
 COPY --from=base / /
 
 
-COPY --from=chef /app/recipe.json recipe.json
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-  --mount=type=cache,target=/usr/local/cargo/git \
-  --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
-  cargo chef cook --recipe-path recipe.json
+# COPY --from=chef /app/recipe.json recipe.json
+# RUN --mount=type=cache,target=/usr/local/cargo/registry \
+#   --mount=type=cache,target=/usr/local/cargo/git \
+#   --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
+#   cargo chef cook --recipe-path recipe.json
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
   --mount=type=cache,target=/usr/local/cargo/git \
-  --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
   cargo build
+  # --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
 
-RUN /usr/local/cargo/sccache --show-stats
+# RUN /usr/local/cargo/sccache --show-stats
 
 # Stage 4: Final image
 FROM base AS final
