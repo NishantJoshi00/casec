@@ -28,7 +28,7 @@ COPY . .
 # FROM chef AS cooking
 # WORKDIR /app
 
-COPY . .
+# COPY . .
 
 # ARG CARGO_DIR
 # ARG ACTIONS_RUNTIME_TOKEN
@@ -54,7 +54,7 @@ ENV ACTIONS_CACHE_URL=${ACTIONS_CACHE_URL}
 ENV ACTIONS_RUNTIME_TOKEN=${ACTIONS_RUNTIME_TOKEN}
 # ENV RUSTC_WRAPPER=/usr/local/cargo/sccache SCCACHE_DIR=~/.cache/sccache
 
-COPY --from=base / /
+# COPY --from=base / /
 
 
 # COPY --from=chef /app/recipe.json recipe.json
